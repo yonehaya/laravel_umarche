@@ -27,7 +27,19 @@ Route::get('/', function () {
 });
 
 Route::resource('owners', OwnersController::class)
-->middleware('auth:admin');
+    ->middleware('auth:admin');
+
+Route::prefix('expired-owners')->middleware('auth:admin')->group(function () {
+        Route::get('index', [
+            OwnersController::class,
+            'expiredOwnerIndex'
+        ])->name('expired-owners.index');
+        Route::post(
+            'destroy/{owner}',
+            [OwnersController::class, 'expiredOwnerDestroy']
+        )
+            ->name('expired-owners.destroy');
+    });
 
 Route::get('/dashboard', function () {
     return view('admin.dashboard');
@@ -79,4 +91,3 @@ Route::middleware('auth:admin')->group(function () {
     Route::post('logout', [AuthenticatedSessionController::class, 'destroy'])
         ->name('logout');
 });
-
