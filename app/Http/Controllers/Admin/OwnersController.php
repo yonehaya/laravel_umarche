@@ -9,6 +9,9 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB; //QueryBuilder クエリービルダー
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules;
+use Throwable;
+use Illuminate\Support\Facades\Log;
+use App\Models\Shop;
 
 class OwnersController extends Controller
 {
@@ -70,11 +73,30 @@ class OwnersController extends Controller
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        Owner::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+        try {
+            DB::transaction(function () use ($request) {
+                $owner = Owner::create([
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'password' => Hash::make($request->password),
+                ]);
+
+                Shop::create([
+                    'owner_id' => $owner->id,
+                    'name' => '店名を入力してください',
+                    'information' => '店舗情報を入力してください',
+                    'filename' => '',
+                    'is_selling' => true,
+
+                ]);
+            }, 2);
+           
+        } catch (Throwable $e) {
+            Log::error($e);
+           
+            throw $e;
+        }
+
         return redirect()
             ->route('admin.owners.index')
             ->with(['message' => 'オーナー登録を実施しました。', 'status' => 'info']);
@@ -138,7 +160,7 @@ class OwnersController extends Controller
             ->route('admin.owners.index')
             ->with(['message' => 'オーナー情報を削除しました。', 'status' => 'alert']);
     }
-    
+
     public function expiredOwnerIndex()
     {
         $expiredOwners = Owner::onlyTrashed()->get();
