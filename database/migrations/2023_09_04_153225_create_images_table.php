@@ -19,8 +19,9 @@ class CreateImagesTable extends Migration
             ->constrained()
             ->onUpdate('cascade')
             ->onDelete('cascade');
-            $table->string('name');
+            $table->string('name')->default('');
             $table->string('title')->nullable();
+            $table->string('filename');
             $table->timestamps();
         });
     }
