@@ -67,9 +67,9 @@ class ProductController extends Controller
     {
         $shops = Shop::where('owner_id', Auth::id())->select('id', 'name')->get();
 
-        $images = Image::where('owner_id', Auth::id())->select('id','title', 'filename')
-        ->orderBy('updated_at','desc')
-        ->get();
+        $images = Image::where('owner_id', Auth::id())->select('id', 'title', 'filename')
+            ->orderBy('updated_at', 'desc')
+            ->get();
 
         $categories = PrimaryCategory::with('secondary')->get();
 
@@ -87,16 +87,16 @@ class ProductController extends Controller
         //
         $request->validate([
             'name' => ['required', 'string', 'max:50'],
-            'information' => ['required', 'string','max:1000',],
-            'price' => ['required','Integer'],
+            'information' => ['required', 'string', 'max:1000',],
+            'price' => ['required', 'Integer'],
             'quantity' => ['required', 'integer'],
             'sort_order' => ['nullable', 'integer'],
             'shop_id' => ['required', 'exists:shops,id'],
-            'category' => ['required','exists:secondary_categories,id'],
+            'category' => ['required', 'exists:secondary_categories,id'],
             'image1' => ['nullable', 'exists:images,id'],
             'image2' => ['nullable', 'exists:images,id'],
             'image3' => ['nullable', 'exists:images,id'],
-            'image4' => ['nullable','exists:images,id'],
+            'image4' => ['nullable', 'exists:images,id'],
             'is_selling' => ['required'],
         ]);
 
@@ -124,7 +124,6 @@ class ProductController extends Controller
 
                 ]);
             }, 2);
-           
         } catch (Throwable $e) {
             Log::error($e);
             throw $e;
@@ -133,7 +132,6 @@ class ProductController extends Controller
         return redirect()
             ->route('owner.products.index')
             ->with(['message' => '商品を登録しました。', 'status' => 'info']);
-
     }
 
     /**
@@ -147,15 +145,23 @@ class ProductController extends Controller
         //
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+
     public function edit($id)
     {
-        //
+        $product = Product::findOrFail($id);
+
+        $quantity = Stock::where('product_id', $product->id)
+            ->sum('quantity');
+
+        $shops = Shop::where('owner_id', Auth::id())->select('id', 'name')->get();
+
+        $images = Image::where('owner_id', Auth::id())->select('id', 'title', 'filename')
+            ->orderBy('updated_at', 'desc')
+            ->get();
+
+        $categories = PrimaryCategory::with('secondary')->get();
+        
+        return view('owner.products.edit', compact('product', 'quantity', 'shops', 'images', 'categories'));
     }
 
     /**
