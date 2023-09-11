@@ -154,9 +154,26 @@ return [
     */
 
     'attributes' => [
-      'name' => '名前',
-      'email' => 'メールアドレス',
-      'password' => 'パスワード'
+        'name' => '名前',
+        'email' => 'メールアドレス',
+        'password' => 'パスワード',
+        'password_confirmation' => 'パスワード（確認）',
+        'image' => '画像',
+        'information' => '店舗情報',
+        'price' => '価格',
+        'quantity' => '初期在庫',
+        'sort_order' => '表示順',
+        'shop_id' => '販売する店舗',
+        'category' => 'カテゴリー',
+        'image1' => '画像1',
+        'image2' => '画像2',
+        'image3' => '画像3',
+        'image4' => '画像4',
+        'is_selling' => '販売中か停止中',
+        'current_quantity' => '現在の在庫数',
+        'type' => '在庫の変更タイプ',
+        'product_id' => '商品名',
+        'quantity' => '数量',
 
     ],
 
